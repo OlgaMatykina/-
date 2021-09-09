@@ -1,0 +1,14 @@
+# Лабораторная работа №1 #
+## "Интерполирование и приближение функций" ##
+#### Выполнила: Матыкина О.В. ####
+#### Проверила: Шабунина З.А. ####
+file_input = open("input.txt", "r")
+def reading(argument): #argument - list
+    input_str=file_input.readline()
+    input_char=input_str.split(', ')
+    for char in input_char:
+        argument.append(float(char))
+x=[]
+y=[]
+reading(x)
+reading(y)
