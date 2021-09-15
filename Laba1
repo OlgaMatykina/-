@@ -12,3 +12,46 @@ x=[]
 y=[]
 reading(x)
 reading(y)
+input_str=file_input.read()
+xx=float(input_str)
+file_input.close()
+def bubble_sort(x,y):
+    def swap(i, j):
+        x[i], x[j] = x[j], x[i]
+        y[i], y[j] = y[j], y[i]
+    n = len(x)
+    swapped = True
+    
+    j = -1
+    while swapped:
+        swapped = False
+        j = j + 1
+        for i in range(1, n-j):
+            if abs(x[i - 1]-xx) > abs(x[i]-xx):
+                swap(i - 1, i)
+                swapped = True
+            elif x[i - 1]-xx==x[i]-xx:
+                    return 1
+    return 0
+    IER=bubble_sort(x,y)
+if IER:
+    file_output = open("output.txt", "w")
+    file_output.write('IER='+str(IER))
+    file_output.close()
+else:
+    def l(k):
+        l=1
+        n=len(x)
+        for i in range(0,n-1):
+            if i!=k:
+                a=(xx-x[i])/(x[k]-x[i])
+                l*=a
+        return l
+    YY=y[0]*l(0)+y[1]*l(1)+y[2]*l(2)
+    YY3=YY+y[3]*l(3)
+    EPS_YY=abs(YY3-YY)
+    file_output = open("output.txt", "w")
+    file_output.write('YY='+str(round(YY,2)))
+    file_output.write('\nEPS_YY='+str(round(EPS_YY,3)))
+    file_output.write('\nIER='+str(IER))
+    file_output.close()
