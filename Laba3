@@ -1,0 +1,190 @@
+import random as rd
+import numpy as np
+file_input = open("input.txt", "r")
+input_str=file_input.readline()
+N=int(input_str)#размерность системы
+input_str=file_input.readline()
+interval=int(input_str)#диапазон
+input_str=file_input.readline()
+k=int(input_str)
+input_str=file_input.readline()
+numberOfIterations=int(input_str)#количество запусков
+file_input.close()
+def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
+    if (b[0]!=0):
+        c[0]=c[0]/b[0];
+        p[0]=p[0]/b[0];
+        q[0]=q[0]/b[0];
+        f1[0]=f1[0]/b[0];
+        f2[0]=f2[0]/b[0];
+        b[0]=1;
+        
+    else:
+        IER=0
+        return IER,f1,f2
+    for i in range(1,k):
+        b[i]=(b[i]-c[i-1]*a[i]);
+        if(b[i]!=0):
+            c[i]=c[i]/b[i];
+            p[i]=(p[i]-p[i-1]*a[i])/b[i];
+            q[i]=(q[i]-q[i-1]*a[i])/b[i];
+            f1[i]=(f1[i]-f1[i-1]*a[i])/b[i];
+            f2[i]=(f2[i]-f2[i-1]*a[i])/b[i];
+            a[i]=0; 
+            b[i]=1;
+        else:
+            IER=1
+            return IER,f1,f2
+    
+    p[k]=(p[k]-p[k-1]*a[k]);
+    if (p[k]!=0): 
+        q[k]=(q[k]-q[k-1]*a[k])/p[k];
+        f1[k]=(f1[k]-f1[k-1]*a[k])/p[k];
+        f2[k]=(f2[k]-f2[k-1]*a[k])/p[k];
+        a[k]=0;
+        p[k]=1;
+    else:
+        IER=1
+        return IER,f1,f2
+    
+    #обнуляем p вниз k-ой строкой
+    for i in range(k+1, n):#до n-1 включительно
+        q[i]=q[i]-q[k]*p[i];
+        f1[i]=f1[i]-f1[k]*p[i];
+        f2[i]=f2[i]-f2[k]*p[i];
+        p[i]=0;
+       
+        
+    if (b[n-1]!=0): 
+        a[n-1]=a[n-1]/b[n-1];
+        q[n-1]=q[n-1]/b[n-1];
+        f1[n-1]=f1[n-1]/b[n-1];
+        f2[n-1]=f2[n-1]/b[n-1];
+        b[n-1]=1;
+    else:
+        IER=1
+        return IER,f1,f2
+    
+    for i in range(n-2,k+1,-1):#до k+2 включительно
+        b[i]=(b[i]-a[i+1]*c[i]);
+        if (b[i]!=0): 
+            a[i]=a[i]/b[i];
+            q[i]=(q[i]-q[i+1]*c[i])/b[i];
+            f1[i]=(f1[i]-f1[i+1]*c[i])/b[i];
+            f2[i]=(f2[i]-f2[i+1]*c[i])/b[i];
+            c[i]=0;
+            b[i]=1;
+        else:
+            IER=1
+            return IER,f1,f2
+    
+    q[k+1]=(q[k+1]-q[k+2]*c[k+1]);
+    if (q[k+1]!=0): 
+        f1[k+1]=(f1[k+1]-f1[k+2]*c[k+1])/q[k+1];
+        f2[k+1]=(f2[k+1]-f2[k+2]*c[k+1])/q[k+1];
+        c[k+1]=0;
+        q[k+1]=1;
+    else:
+        IER=1
+        return IER,f1,f2
+    
+    f1[k]=f1[k]-f1[k+1]*q[k]
+    f2[k]=f2[k]-f2[k+1]*q[k]
+    q[k]=0;
+   
+        
+    for i in range(k+2,n):
+        f1[i]=f1[i]-f1[k+1]*q[i]
+        f2[i]=f2[i]-f2[k+1]*q[i]
+        q[i]=0
+       
+    
+    for i in range(k-1, -1, -1):#до 0 включительно
+        f1[i]=f1[i]-f1[k]*p[i];
+        f2[i]=f2[i]-f2[k]*p[i];
+        p[i]=0;
+        f1[i]=f1[i]-f1[k+1]*q[i]
+        f2[i]=f2[i]-f2[k+1]*q[i]
+        q[i]=0;
+
+        
+    for i in range(k-2, -1, -1):
+        f1[i]=f1[i]-f1[i+1]*c[i]
+        f2[i]=f2[i]-f2[i+1]*c[i]
+        c[i]=0
+    for i in range(k+3,n):
+        f1[i]=f1[i]-f1[i-1]*a[i]
+        f2[i]=f2[i]-f2[i-1]*a[i]
+        a[i]=0
+        
+    IER=0
+    return IER,f1, f2
+    def evaluateAccuracySolution(x, xcalc, n):
+    delta=0.0000001;
+    evaluation=0
+    for i in range(n):
+        if (abs(x[i])>delta):
+            evaluation=max(evaluation, abs((x[i]-xcalc[i])/x[i]));
+        else:
+            evaluation=max(evaluation, abs(x[i]-xcalc[i]));
+    return evaluation            
+k=k-1 # так как нумерация в массивах начинается с 0
+meanValue1=0
+meanValue2=0
+for j in range(numberOfIterations):
+    a=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
+    b=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
+    c=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
+    p=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
+    q=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
+    x1=np.ones(N)
+    x2=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
+    print(x1)
+    print(x2)
+
+    f1=np.zeros(N)
+    f2=np.zeros(N)
+    if (k>0 and k<N-2):
+        c[k-1]=0
+        b[k]=0
+        c[k]=0
+        a[k+1]=0
+        b[k+1]=0
+        a[k+2]=0
+
+    #насчитываем правые части
+    f1[0]=b[0]+c[0]+p[0]+q[0]
+    f2[0]=b[0]*x2[0]+c[0]*x2[1]+p[0]*x2[k]+q[0]*x2[k+1]
+
+    for i in range(1,N-1):#до n-2 включительно
+        f1[i]=a[i]+b[i]+c[i]+p[i]+q[i]
+        f2[i]=a[i]*x2[i-1]+b[i]*x2[i]+c[i]*x2[i+1]+p[i]*x2[k]+q[i]*x2[k+1]
+
+
+    f1[N-1]=a[N-1]+b[N-1]+p[N-1]+q[N-1]
+    f2[N-1]=a[N-1]*x2[N-2]+b[N-1]*x2[N-1]+p[N-1]*x2[k]+q[N-1]*x2[k+1]
+
+    [IER,x1calc,x2calc]=solveSistemLinearEquals(N,k,a,b,c,p,q,f1,f2)
+
+    accuracy1=evaluateAccuracySolution(x1,x1calc,N);
+    accuracy2=evaluateAccuracySolution(x2,x2calc,N);
+    meanValue1=meanValue1+accuracy1
+    meanValue2=meanValue2+accuracy2;
+meanValue1=meanValue1/numberOfRounds
+meanValue2=meanValue2/numberOfRounds
+#file_output = open("output.txt", "w")
+#file_output.write('Evaliation of accuracy='+str(meanValue1))
+#file_output.write('\nMeasurement error='+str(meanValue2))
+#file_output.write('\nIER='+str(IER))
+#file_output.close()
+file_output = open("output.txt", "w")
+file_output.write('Evaliation of accuracy='+str(meanValue1))
+file_output.write('\nMeasurement error='+str(meanValue2))
+file_output.write('\nx1='+str(x1))
+file_output.write('\nx1calc='+str(x1calc))
+file_output.write('\nx2='+str(x2))
+file_output.write('\nx2calc='+str(x2calc))
+file_output.write('\nIER='+str(IER))
+file_output.close()
+print(accuracy1);
+print(accuracy2);
