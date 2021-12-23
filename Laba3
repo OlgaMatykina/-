@@ -1,3 +1,7 @@
+# Лабораторная работа №3 #
+## "Решение систем линейных уравнений с разреженной матрицей специального вида" ##
+#### Выполнила: Матыкина О.В. ####
+#### Проверила: Шабунина З.А. ####
 import random as rd
 import numpy as np
 file_input = open("input.txt", "r")
@@ -8,7 +12,7 @@ interval=int(input_str)#диапазон
 input_str=file_input.readline()
 k=int(input_str)
 input_str=file_input.readline()
-numberOfIterations=int(input_str)#количество запусков
+numberOfRounds=int(input_str)#количество запусков
 file_input.close()
 def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
     if (b[0]!=0):
@@ -30,11 +34,24 @@ def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
             q[i]=(q[i]-q[i-1]*a[i])/b[i];
             f1[i]=(f1[i]-f1[i-1]*a[i])/b[i];
             f2[i]=(f2[i]-f2[i-1]*a[i])/b[i];
-            a[i]=0; 
+            a[i]=0;            
+            #a[i]=(a[i]-b[i-1]*a[i])/b[i];
             b[i]=1;
         else:
             IER=1
             return IER,f1,f2
+    #b[k-1]=(b[k-1]-c[k-2]*a[k-1]);
+    #if (b[k-1]!=0):            
+   #     p[k-1]=(p[k-1]-p[k-2]*a[k-1])/b[k-1];
+   #     q[k-1]=(q[k-1]-q[k-2]*a[k-1])/b[k-1];
+    #    f1[k-1]=(f1[k-1]-f1[k-2]*a[k-1])/b[k-1];
+     #   f2[k-1]=(f2[k-1]-f2[k-2]*a[k-1])/b[k-1];
+   #     #a[k-1]=0;
+   #     a[k-1]=(a[k-1]-b[k-2]*a[k-1])/b[k-1];
+   #     b[k-1]=1;
+   # else:
+   #     IER=0
+   #     return IER 
     
     p[k]=(p[k]-p[k-1]*a[k]);
     if (p[k]!=0): 
@@ -42,6 +59,7 @@ def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
         f1[k]=(f1[k]-f1[k-1]*a[k])/p[k];
         f2[k]=(f2[k]-f2[k-1]*a[k])/p[k];
         a[k]=0;
+        #a[k]=(a[k]-b[k-1]*a[k])/p[k];
         p[k]=1;
     else:
         IER=1
@@ -53,7 +71,7 @@ def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
         f1[i]=f1[i]-f1[k]*p[i];
         f2[i]=f2[i]-f2[k]*p[i];
         p[i]=0;
-       
+        #p[i]=p[i]-p[k]*p[i];
         
     if (b[n-1]!=0): 
         a[n-1]=a[n-1]/b[n-1];
@@ -73,53 +91,87 @@ def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
             f1[i]=(f1[i]-f1[i+1]*c[i])/b[i];
             f2[i]=(f2[i]-f2[i+1]*c[i])/b[i];
             c[i]=0;
+            #c[i]=(c[i]-b[i+1]*c[i])/b[i];
             b[i]=1;
         else:
             IER=1
             return IER,f1,f2
+        
+   # b[k+2]=(b[k+2]-a[k+3]*c[k+2])
+   # if (b[k+2]!=0): 
+   #     q[k+2]=(q[k+2]-q[k+3]*c[k+2])/b[k+2];
+   #     f1[k+2]=(f1[k+2]-f1[k+3]*c[k+2])/b[k+2];
+   #     f2[k+2]=(f2[k+2]-f2[k+3]*c[k+2])/b[k+2];
+   #     #c[k+2]=0;
+   #     c[k+2]=(c[k+2]-b[k+3]*c[k+2])/b[k+2];
+   #     b[k+2]=1;
+   # else:
+   #     IER=0
+   #     return IER
     
     q[k+1]=(q[k+1]-q[k+2]*c[k+1]);
     if (q[k+1]!=0): 
         f1[k+1]=(f1[k+1]-f1[k+2]*c[k+1])/q[k+1];
         f2[k+1]=(f2[k+1]-f2[k+2]*c[k+1])/q[k+1];
         c[k+1]=0;
+        #c[k+1]=(c[k+1]-b[k+2]*c[k+1])/q[k+1];
+       # b[k+1]=1;
         q[k+1]=1;
     else:
         IER=1
         return IER,f1,f2
     
-    f1[k]=f1[k]-f1[k+1]*q[k]
-    f2[k]=f2[k]-f2[k+1]*q[k]
+    f1[k]=f1[k]-f1[k+1]*q[k]#изменяю
+    f2[k]=f2[k]-f2[k+1]*q[k]#изменяю
     q[k]=0;
-   
+    #q[k]=q[k]-q[k+1]*q[k]
         
     for i in range(k+2,n):
-        f1[i]=f1[i]-f1[k+1]*q[i]
-        f2[i]=f2[i]-f2[k+1]*q[i]
+        f1[i]=f1[i]-f1[k+1]*q[i]#изменяю
+        f2[i]=f2[i]-f2[k+1]*q[i]#изменяю
         q[i]=0
-       
+        #q[i]=q[i]-q[k+1]*q[i]
+        
+   
     
     for i in range(k-1, -1, -1):#до 0 включительно
-        f1[i]=f1[i]-f1[k]*p[i];
-        f2[i]=f2[i]-f2[k]*p[i];
+        f1[i]=f1[i]-f1[k]*p[i];#изменяю
+        f2[i]=f2[i]-f2[k]*p[i];#изменяю
         p[i]=0;
-        f1[i]=f1[i]-f1[k+1]*q[i]
-        f2[i]=f2[i]-f2[k+1]*q[i]
+        #p[i]=p[i]-p[k]*p[i];
+        f1[i]=f1[i]-f1[k+1]*q[i]#изменяю
+        f2[i]=f2[i]-f2[k+1]*q[i]#изменяю
         q[i]=0;
+        #q[i]=q[i]-q[k+1]*q[i]
 
         
     for i in range(k-2, -1, -1):
-        f1[i]=f1[i]-f1[i+1]*c[i]
-        f2[i]=f2[i]-f2[i+1]*c[i]
+        f1[i]=f1[i]-f1[i+1]*c[i]#изменяю
+        f2[i]=f2[i]-f2[i+1]*c[i]#изменяю
         c[i]=0
+        #c[i]=c[i]-b[i+1]*c[i]
+       # print(c[i])
     for i in range(k+3,n):
-        f1[i]=f1[i]-f1[i-1]*a[i]
-        f2[i]=f2[i]-f2[i-1]*a[i]
+        f1[i]=f1[i]-f1[i-1]*a[i]#изменяю
+        f2[i]=f2[i]-f2[i-1]*a[i]#изменяю
         a[i]=0
+        #a[i]=a[i]-b[i-1]*a[i]
+        #print(a[i])
         
+   # c[k-1]=p[k-1]
+   # b[k]=p[k]
+   # c[k]=q[k]
+   # a[k+1]=p[k+1]
+   # b[k+1]=q[k+1]
+   # a[k+2]=q[k+2]
+    #print(a)
+    #print(b)
+   # print(c)
+   # print(p)
+   # print(q)
     IER=0
     return IER,f1, f2
-    def evaluateAccuracySolution(x, xcalc, n):
+def evaluateAccuracySolution(x, xcalc, n):
     delta=0.0000001;
     evaluation=0
     for i in range(n):
@@ -131,7 +183,7 @@ def solveSistemLinearEquals (n, k, a, b, c, p, q, f1, f2):
 k=k-1 # так как нумерация в массивах начинается с 0
 meanValue1=0
 meanValue2=0
-for j in range(numberOfIterations):
+for j in range(numberOfRounds):
     a=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
     b=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
     c=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
@@ -139,8 +191,8 @@ for j in range(numberOfIterations):
     q=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
     x1=np.ones(N)
     x2=np.array([1.0119*rd.uniform(-interval,interval) for i in range(N)])
-    print(x1)
-    print(x2)
+    #print(x1)
+    #print(x2)
 
     f1=np.zeros(N)
     f2=np.zeros(N)
@@ -172,18 +224,9 @@ for j in range(numberOfIterations):
     meanValue2=meanValue2+accuracy2;
 meanValue1=meanValue1/numberOfRounds
 meanValue2=meanValue2/numberOfRounds
-#file_output = open("output.txt", "w")
-#file_output.write('Evaliation of accuracy='+str(meanValue1))
-#file_output.write('\nMeasurement error='+str(meanValue2))
-#file_output.write('\nIER='+str(IER))
-#file_output.close()
 file_output = open("output.txt", "w")
-file_output.write('Evaliation of accuracy='+str(meanValue1))
-file_output.write('\nMeasurement error='+str(meanValue2))
-file_output.write('\nx1='+str(x1))
-file_output.write('\nx1calc='+str(x1calc))
-file_output.write('\nx2='+str(x2))
-file_output.write('\nx2calc='+str(x2calc))
+file_output.write('Evaliate accuracy='+str(meanValue1))
+file_output.write('\nPogreshnost='+str(meanValue2))
 file_output.write('\nIER='+str(IER))
 file_output.close()
 print(accuracy1);
